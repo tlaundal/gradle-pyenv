@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/gradle-pyenv.iml" filepath="$PROJECT_DIR$/gradle-pyenv.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/gradle-pyenv_functionalTest.iml" filepath="$PROJECT_DIR$/.idea/modules/gradle-pyenv_functionalTest.iml" group="gradle-pyenv" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/gradle-pyenv_main.iml" filepath="$PROJECT_DIR$/.idea/modules/gradle-pyenv_main.iml" group="gradle-pyenv" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/gradle-pyenv_test.iml" filepath="$PROJECT_DIR$/.idea/modules/gradle-pyenv_test.iml" group="gradle-pyenv" />
+    </modules>
+  </component>
+</project>
