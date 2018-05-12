@@ -1,28 +1,32 @@
 package io.totokaka.gradle.pyenv.tasks
 
+import io.totokaka.gradle.pyenv.Utils
 import org.gradle.api.provider.Property
-import org.gradle.api.tasks.Exec
-import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.AbstractExecTask
 import org.gradle.api.tasks.InputDirectory
-import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.OutputDirectory
 
-class CreateVenv extends Exec {
+class CreateVenv extends AbstractExecTask {
 
     @InputDirectory
-    Property<File> prefix
+    Property<File> prefixProp
 
     @OutputDirectory
-    Property<File> target
+    Property<File> targetProp
 
     CreateVenv() {
-        super()
-        prefix = project.objects.property(File)
-        target = project.objects.property(File)
+        super(CreateVenv)
+        prefixProp = project.objects.property(File)
+        targetProp = project.objects.property(File)
 
-        environment('PYTHONHOME', "${ -> prefix.get().getAbsolutePath()}")
-        executable("${ -> prefix.get().getAbsolutePath()}/bin/python")
-        args(['-m', 'venv', "${ -> target.get().getAbsolutePath()}"])
+        environment('PYTHONHOME', "${ -> prefixProp.get().getAbsolutePath()}")
+        executable("${ -> prefixProp.get().getAbsolutePath()}/bin/python")
+        args(['-m', 'venv', "${ -> targetProp.get().getAbsolutePath()}"])
+    }
+
+    static {
+        Utils.dslify(CreateVenv, 'prefixProp', 'prefix')
+        Utils.dslify(CreateVenv, 'targetProp', 'target')
     }
 
 }

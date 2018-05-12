@@ -1,9 +1,15 @@
 apply plugin: 'groovy'
 apply plugin: 'java-gradle-plugin'
 
+plugins {
+    id 'com.gradle.plugin-publish' version '0.9.10'
+}
+
 repositories {
     jcenter()
 }
+
+version '0.0.1'
 
 dependencies {
     compile localGroovy()
@@ -41,3 +47,18 @@ gradlePlugin {
 
     testSourceSets sourceSets.functionalTest
 }
+
+pluginBundle {
+    website = 'https://github.com/totokaka/gradle-pyenv'
+    vcsUrl = 'https://github.com/totokaka/gradle-pyenv.git'
+
+    plugins {
+        gradlePyenv {
+            id = 'io.totokaka.gradle.pyenv'
+            displayName = 'gradle-pyenv'
+            description = 'Simple gradle plugin for building python projects'
+            tags = ['python']
+        }
+    }
+}
+

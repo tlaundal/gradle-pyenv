@@ -1,5 +1,6 @@
 package io.totokaka.gradle.pyenv
 
+import io.totokaka.gradle.pyenv.tasks.VenvExec
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.Rule
 import org.junit.rules.TemporaryFolder
@@ -21,20 +22,30 @@ class PyenvPluginFunctionalTest extends Specification {
             plugins {
                 id 'io.totokaka.gradle.pyenv'
             }
+            
+            task pythonHello(type: VenvExec) {
+                dependsOn createVenv
+                executable 'python'
+                arguments '-c', 'print("Hello World!")'
+                
+            }
         """
     }
 
-    def "can download and extract pyenv"() {
-        when:
-        def result = GradleRunner.create()
+    def "can run python in venv"() {
+        setup:
+        def runner = GradleRunner.create()
                 .withProjectDir(testProjectDir.root)
-                .withArguments('extractPythonBuild')
+                .withArguments('--stacktrace', '--debug', 'pythonHello')
                 .withPluginClasspath()
-                .build()
+
+        when:
+        def result = runner.build()
 
         then:
-        result.task(":extractPythonBuild").outcome == SUCCESS
-        new File(testProjectDir.root, '.gradle/pyenv-bootstrap/python-build/bin/python-build').isFile()
+        result.task(":pythonHello").outcome == SUCCESS
+        result.task(":pythonHello").execResult.assertNormalExitValue()
+        result.output.contains('Hello World!')
     }
 
 }

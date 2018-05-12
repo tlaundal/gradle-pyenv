@@ -7,24 +7,32 @@ class PyenvExtension {
     /**
      * The directory pyenv will be built in
      */
-    Property<File> bootstrapDirectory
-    Property<File> prefixDirectory
-    Property<File> pythonBuildDirectory
-    Property<String> pythonVersion
-    Property<File> environment
+    Property<File> bootstrapDirectoryProp
+    Property<File> prefixDirectoryProp
+    Property<File> pythonBuildDirectoryProp
+    Property<String> pythonVersionProp
+    Property<File> environmentProp
 
     PyenvExtension(Project project) {
-        bootstrapDirectory = project.objects.property(File)
-        prefixDirectory = project.objects.property(File)
-        pythonBuildDirectory = project.objects.property(File)
-        pythonVersion = project.objects.property(String)
-        environment = project.objects.property(File)
+        bootstrapDirectoryProp = project.objects.property(File)
+        prefixDirectoryProp = project.objects.property(File)
+        pythonBuildDirectoryProp = project.objects.property(File)
+        pythonVersionProp = project.objects.property(String)
+        environmentProp = project.objects.property(File)
 
-        bootstrapDirectory.set(new File("${project.rootDir}/.gradle/pyenv-bootstrap"))
-        prefixDirectory.set(bootstrapDirectory.map({ new File(it, 'prefix') }))
-        pythonBuildDirectory.set(bootstrapDirectory.map({ new File(it, 'python-build')}))
-        pythonVersion.set('3.6.0')
-        environment.set(bootstrapDirectory.map({ new File(it, 'env') }))
+        bootstrapDirectoryProp.set(new File("${project.rootDir}/.gradle/pyenv-bootstrap"))
+        prefixDirectoryProp.set(bootstrapDirectoryProp.map({ new File(it, 'prefix') }))
+        pythonBuildDirectoryProp.set(bootstrapDirectoryProp.map({ new File(it, 'python-build')}))
+        pythonVersionProp.set('3.6.0')
+        environmentProp.set(new File(project.buildDir, 'venv'))
+    }
+
+    static {
+        Utils.dslify(PyenvExtension, 'bootstrapDirectoryProp', 'bootstrapDirectory')
+        Utils.dslify(PyenvExtension, 'prefixDirectoryProp','prefixDirectory')
+        Utils.dslify(PyenvExtension, 'pythonBuildDirectoryProp','pythonBuildDirectory')
+        Utils.dslify(PyenvExtension, 'pythonVersionProp','pythonVersion')
+        Utils.dslify(PyenvExtension, 'environmentProp','environment')
     }
 
 }
