@@ -9,5 +9,5 @@ final class Utils {
         type.metaClass["set${alias.capitalize()}"] = setter
         type.metaClass[alias] = setter
     }
-    
+
 }

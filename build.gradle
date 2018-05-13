@@ -1,15 +1,17 @@
-apply plugin: 'groovy'
-apply plugin: 'java-gradle-plugin'
-
 plugins {
     id 'com.gradle.plugin-publish' version '0.9.10'
 }
+
+apply plugin: 'groovy'
+apply plugin: 'java-gradle-plugin'
+
+version = '0.0.3'
+group = 'io.totokaka.gradle.pyenv'
 
 repositories {
     jcenter()
 }
 
-version '0.0.1'
 
 dependencies {
     compile localGroovy()
@@ -27,15 +29,6 @@ sourceSets {
         runtimeClasspath += output + compileClasspath
     }
 }
-
-task functionalTest(type: Test) {
-    description = 'Runs the function tests.'
-    group = 'verification'
-    testClassesDirs = sourceSets.functionalTest.output.classesDirs
-    classpath = sourceSets.functionalTest.runtimeClasspath
-    mustRunAfter test
-}
-check.dependsOn functionalTest
 
 gradlePlugin {
     plugins {
@@ -62,3 +55,11 @@ pluginBundle {
     }
 }
 
+task functionalTest(type: Test) {
+    description = 'Runs the function tests.'
+    group = 'verification'
+    testClassesDirs = sourceSets.functionalTest.output.classesDirs
+    classpath = sourceSets.functionalTest.runtimeClasspath
+    mustRunAfter test
+}
+//check.dependsOn functionalTest

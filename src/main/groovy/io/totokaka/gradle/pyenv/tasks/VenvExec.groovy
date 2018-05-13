@@ -22,7 +22,6 @@ class VenvExec extends DefaultTask {
     @Input
     Property<Object> executableProp
 
-    @Input
     List<Object> arguments
 
     @Input
@@ -66,12 +65,19 @@ class VenvExec extends DefaultTask {
         execResult = project.exec(this.&configureAction)
     }
 
+
+
     void arguments(Object... args) {
         this.setArguments(args.toList())
     }
 
     void arguments(List<Object> args) {
         this.setArguments(args)
+    }
+
+    @Input
+    Serializable getArgumentsAsInput() {
+        return String.join(' ', arguments.collect({it?.toString()}))
     }
 
 }

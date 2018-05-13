@@ -1,12 +1,9 @@
 package io.totokaka.gradle.pyenv
 
-import io.totokaka.gradle.pyenv.tasks.VenvExec
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.Rule
 import org.junit.rules.TemporaryFolder
 import spock.lang.Specification
-
-import java.nio.file.Path
 
 import static org.gradle.testkit.runner.TaskOutcome.SUCCESS
 
@@ -30,6 +27,7 @@ class PyenvPluginFunctionalTest extends Specification {
                 
             }
         """
+
     }
 
     def "can run python in venv"() {
@@ -44,7 +42,6 @@ class PyenvPluginFunctionalTest extends Specification {
 
         then:
         result.task(":pythonHello").outcome == SUCCESS
-        result.task(":pythonHello").execResult.assertNormalExitValue()
         result.output.contains('Hello World!')
     }
 

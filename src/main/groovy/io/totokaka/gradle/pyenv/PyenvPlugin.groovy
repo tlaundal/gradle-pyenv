@@ -67,6 +67,7 @@ class PyenvPlugin implements Plugin<Project> {
     static final Pattern stripPluginsDirPattern = Pattern.compile($/^plugins/python-build//$)
 
     void configureExtractPythonBuildTask(Copy task) {
+        task.setDescription('Resolves pyenv through gradle dependency, and extracts python-build')
         task.from(project.zipTree(selectPyenvFile(project.configurations.pyenv.resolve())))
         task.into("${ -> extension.pythonBuildDirectoryProp.get()}")
         task.eachFile({ details ->
@@ -82,6 +83,7 @@ class PyenvPlugin implements Plugin<Project> {
     }
 
     void configureDefaultBuildPythonTask(BuildPython task) {
+        task.setDescription('Builds python using python-build. Typically takes over 10 minutes')
         task.dependsOn(project.tasks['extractPythonBuild'])
 
         task.pythonBuildDirProp.set(extension.pythonBuildDirectoryProp)
@@ -90,6 +92,7 @@ class PyenvPlugin implements Plugin<Project> {
     }
 
     void configureDefaultCreateVenvTask(CreateVenv task) {
+        task.setDescription('Create a virtual python environment with venv')
         task.dependsOn(project.tasks['buildPython'])
 
         task.prefixProp.set(extension.prefixDirectoryProp)
