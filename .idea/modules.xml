@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/gradle-pyenv.iml" filepath="$PROJECT_DIR$/gradle-pyenv.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/gradle-pyenv_functionalTest.iml" filepath="$PROJECT_DIR$/.idea/modules/gradle-pyenv_functionalTest.iml" group="gradle-pyenv" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/gradle-pyenv_integrationTest.iml" filepath="$PROJECT_DIR$/.idea/modules/gradle-pyenv_integrationTest.iml" group="gradle-pyenv" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/gradle-pyenv_main.iml" filepath="$PROJECT_DIR$/.idea/modules/gradle-pyenv_main.iml" group="gradle-pyenv" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/gradle-pyenv_test.iml" filepath="$PROJECT_DIR$/.idea/modules/gradle-pyenv_test.iml" group="gradle-pyenv" />
     </modules>

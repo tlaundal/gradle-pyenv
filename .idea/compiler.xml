@@ -3,6 +3,7 @@
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel>
       <module name="gradle-pyenv_functionalTest" target="1.8" />
+      <module name="gradle-pyenv_integrationTest" target="1.8" />
       <module name="gradle-pyenv_main" target="1.8" />
       <module name="gradle-pyenv_test" target="1.8" />
     </bytecodeTargetLevel>
