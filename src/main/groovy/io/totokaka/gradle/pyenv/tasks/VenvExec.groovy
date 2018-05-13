@@ -22,6 +22,7 @@ class VenvExec extends DefaultTask {
     @Input
     Property<Object> executableProp
 
+    @Internal
     List<Object> arguments
 
     @Input
