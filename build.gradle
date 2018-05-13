@@ -5,7 +5,7 @@ plugins {
 apply plugin: 'groovy'
 apply plugin: 'java-gradle-plugin'
 
-version = '0.0.7'
+version = '0.0.8'
 group = 'io.totokaka.gradle.pyenv'
 
 repositories {
