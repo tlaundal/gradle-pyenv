@@ -8,6 +8,7 @@ import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.OutputDirectory
+import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
 
@@ -29,10 +30,10 @@ class BuildPython extends AbstractExecTask {
         this.pythonProp = project.objects.property(String)
         this.targetProp = project.objects.property(File)
 
-        onlyIf(this.&notBuilt)
+        onlyIf({notBuilt()})
         executable("${ -> pythonBuildDirProp.get().getAbsolutePath()}/bin/python-build")
         args(["${ -> pythonProp.get()}", "${ -> targetProp.get().getAbsolutePath()}"])
-        doLast(this.&writeChecksum)
+        doLast({writeChecksum()})
     }
 
     static {
@@ -42,24 +43,24 @@ class BuildPython extends AbstractExecTask {
     }
 
     boolean notBuilt() {
-        File dir = targetProp.get()
         byte[] checksum
         try {
-            checksum = getChecksumFile(dir).getBytes()
+            checksum = getChecksumFile().getBytes()
         } catch (Exception ignored) {
             checksum = []
         }
 
-        return !DirectoryChecksumUtil.verifyDirectoryChecksum(dir, checksum)
+        return !DirectoryChecksumUtil.verifyDirectoryChecksum(targetProp.get(), checksum)
     }
 
     void writeChecksum() {
-        File dir = targetProp.get()
-        byte[] checksum = DirectoryChecksumUtil.checksumDirectory(dir)
-        getChecksumFile(dir) << checksum
+        byte[] checksum = DirectoryChecksumUtil.checksumDirectory(targetProp.get())
+        getChecksumFile() << checksum
     }
 
-    static File getChecksumFile(File dir) {
+    @OutputFile
+    File getChecksumFile() {
+        File dir = targetProp.get()
         return new File(dir.parent, dir.name + ".checksum")
     }
 
