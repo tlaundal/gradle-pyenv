@@ -6,11 +6,22 @@ import org.gradle.api.tasks.AbstractExecTask
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.OutputDirectory
 
+/**
+ * Gradle task for creating a Python venv virtual environment.
+ *
+ * This task depends on Python3, as the venv python modules is used.
+ */
 class CreateVenv extends AbstractExecTask {
 
+    /**
+     * The directory python is found in.
+     */
     @InputDirectory
     Property<File> prefixProp
 
+    /**
+     * The directory the venv should be placed in.
+     */
     @OutputDirectory
     Property<File> targetProp
 

@@ -12,15 +12,31 @@ import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.StopExecutionException
 import org.gradle.api.tasks.TaskAction
 
+/**
+ * Gradle task that builds Python from source using pyenv's build-python
+ */
 @CacheableTask
 class BuildPython extends DefaultTask {
 
+    /**
+     * The directory python-build is found in.
+     */
     @Internal
     Property<File> pythonBuildDirProp
 
+    /**
+     * The python version that should be built.
+     *
+     * For example: "3.6.0"
+     */
     @Input
     Property<String> pythonProp
 
+    /**
+     * The target folder for the build.
+     *
+     * This is what later may be used as the python prefix.
+     */
     @OutputDirectory
     Property<File> targetProp
 
@@ -46,7 +62,7 @@ class BuildPython extends DefaultTask {
     @TaskAction
     void exec() {
         if (this.alreadyBuilt()) {
-            throw new StopExecutionException()
+            throw new StopExecutionException('Python already exists in this location, no need for building')
         }
 
         buildPython()

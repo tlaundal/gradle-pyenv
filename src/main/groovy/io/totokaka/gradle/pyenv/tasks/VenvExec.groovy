@@ -3,6 +3,7 @@ package io.totokaka.gradle.pyenv.tasks
 import io.totokaka.gradle.pyenv.PyenvExtension
 import io.totokaka.gradle.pyenv.Utils
 import org.gradle.api.DefaultTask
+import org.gradle.api.Project
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
@@ -12,22 +13,38 @@ import org.gradle.process.ExecResult
 import org.gradle.process.ExecSpec
 
 /**
- * Executes a command inside the venv
+ * Gradle task for executing commands inside a venv
  */
 class VenvExec extends DefaultTask {
 
+    /**
+     * The directory of the venv
+     */
     @InputDirectory
     Property<File> venvProp
 
+    /**
+     * Name of the executable, such as "python" or "pip", or a path to an executable
+     */
     @Input
     Property<Object> executableProp
 
+    /**
+     * Arguments to pass to the executable
+     */
     @Internal
     List<Object> arguments
 
+    /**
+     * The working directory for the process.
+     * Defaults to {@link Project#getProjectDir}
+     */
     @Input
     Property<File> workingDirectoryProp
 
+    /**
+     * The result of the process execution
+     */
     @Internal
     ExecResult execResult
 
@@ -66,16 +83,31 @@ class VenvExec extends DefaultTask {
         execResult = project.exec(this.&configureAction)
     }
 
-
-
+    /**
+     * Append arguments to the executable
+     *
+     * @param args The arguments to append
+     */
     void arguments(Object... args) {
-        this.setArguments(args.toList())
+        this.arguments.addAll(args)
     }
 
+    /**
+     * Append arguments to the executable
+     *
+     * @param args The arguments to append
+     */
     void arguments(List<Object> args) {
-        this.setArguments(args)
+        this.arguments.addAll(args)
     }
 
+    /**
+     * Gets the arguments in a Serializable way, for incremental build support.
+     *
+     * Only for use by Gradle.
+     *
+     * @return The arguments for the executable joined as a string, casted down to a Serializable
+     */
     @Input
     Serializable getArgumentsAsInput() {
         return String.join(' ', arguments.collect({it?.toString()}))

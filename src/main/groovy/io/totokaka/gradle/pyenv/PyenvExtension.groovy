@@ -4,13 +4,36 @@ import org.gradle.api.Project
 import org.gradle.api.provider.Property
 
 class PyenvExtension {
+
     /**
-     * The directory pyenv will be built in
+     * The parent directory used for build tasks.
+     * Used to set the defaults for prefixDirectory and pythonBuildDirectory.
+     * Defaults to "${project.rootDir}/.gradle/pyenv-bootstrap"
      */
     Property<File> bootstrapDirectoryProp
+
+    /**
+     * The directory the built python will be placed into.
+     * Defaults to "${project.rootDir}/.gradle/pyenv-bootstrap/prefix"
+     */
     Property<File> prefixDirectoryProp
+
+    /**
+     * The directory pyenv's python-build will be extracted to.
+     * Defaults to "${project.rootDir}/.gradle/pyenv-bootstrap/python-build"
+     */
     Property<File> pythonBuildDirectoryProp
+
+    /**
+     * The python version to use.
+     * Defaults to "3.6.0"
+     */
     Property<String> pythonVersionProp
+
+    /**
+     * The directory the virtualenv will be placed in.
+     * Defaults to "${project.buildDir}/venv"
+     */
     Property<File> environmentProp
 
     PyenvExtension(Project project) {
@@ -33,6 +56,10 @@ class PyenvExtension {
         Utils.dslify(PyenvExtension, 'pythonBuildDirectoryProp','pythonBuildDirectory')
         Utils.dslify(PyenvExtension, 'pythonVersionProp','pythonVersion')
         Utils.dslify(PyenvExtension, 'environmentProp','environment')
+    }
+
+    static PyenvExtension create(Project project) {
+        return project.extensions.create("pyenv", PyenvExtension, project)
     }
 
 }
