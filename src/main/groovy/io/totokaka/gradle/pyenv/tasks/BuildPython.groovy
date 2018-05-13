@@ -53,9 +53,9 @@ class BuildPython extends DefaultTask {
     }
 
     void buildPython() {
-        project.exec({ execAction ->
-            execAction.executable("${pythonBuildDirProp.get().getAbsolutePath()}/bin/python-build")
-            execAction.args([pythonProp.get(), targetProp.get().getAbsolutePath()])
+        project.exec({ spec ->
+            spec.setExecutable("${pythonBuildDirProp.get().getAbsolutePath()}/bin/python-build")
+            spec.setArgs([pythonProp.get(), targetProp.get().getAbsolutePath()])
         })
     }
 

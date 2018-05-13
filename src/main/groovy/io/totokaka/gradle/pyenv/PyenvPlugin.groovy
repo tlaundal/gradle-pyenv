@@ -2,6 +2,7 @@ package io.totokaka.gradle.pyenv
 
 import io.totokaka.gradle.pyenv.tasks.BuildPython
 import io.totokaka.gradle.pyenv.tasks.CreateVenv
+import io.totokaka.gradle.pyenv.tasks.ExtractPythonBuild
 import io.totokaka.gradle.pyenv.tasks.VenvExec
 import org.gradle.api.Action
 import org.gradle.api.Plugin
@@ -57,7 +58,7 @@ class PyenvPlugin implements Plugin<Project> {
     }
 
     void createDefaultTasks() {
-        project.tasks.create('extractPythonBuild', Copy, this.&configureExtractPythonBuildTask)
+        project.tasks.create('extractPythonBuild', ExtractPythonBuild, this.&configureExtractPythonBuildTask)
         project.tasks.create('buildPython', BuildPython, this.&configureDefaultBuildPythonTask)
         project.tasks.create('createVenv', CreateVenv, this.&configureDefaultCreateVenvTask)
     }
@@ -72,25 +73,11 @@ class PyenvPlugin implements Plugin<Project> {
         project.extensions.extraProperties.set(type.simpleName, type)
     }
 
-    static final Pattern stripParentPattern = Pattern.compile($/^pyenv-[0-9.]+//$)
-    static final Pattern relevantFilePattern = Pattern.compile($/^plugins/python-build/(?:share/.*|bin/python-build)/$)
-    static final Pattern stripPluginsDirPattern = Pattern.compile($/^plugins/python-build//$)
-
-    void configureExtractPythonBuildTask(Copy task) {
+    void configureExtractPythonBuildTask(ExtractPythonBuild task) {
         task.setGroup(TASK_GROUP)
         task.setDescription('Resolves pyenv through gradle dependency, and extracts python-build')
-        task.from(project.zipTree(selectPyenvFile(project.configurations.pyenv.resolve())))
-        task.into("${ -> extension.pythonBuildDirectoryProp.get()}")
-        task.eachFile({ details ->
-            assert details instanceof FileCopyDetails
 
-            details.path = stripParentPattern.matcher(details.path).replaceFirst('')
-            if (!relevantFilePattern.matcher(details.path).matches()) {
-                details.exclude()
-            } else {
-                details.path = stripPluginsDirPattern.matcher(details.path).replaceFirst('')
-            }
-        })
+        task.target.set(extension.pythonBuildDirectoryProp)
     }
 
     void configureDefaultBuildPythonTask(BuildPython task) {
@@ -110,10 +97,6 @@ class PyenvPlugin implements Plugin<Project> {
 
         task.prefixProp.set(extension.prefixDirectoryProp)
         task.targetProp.set(extension.environmentProp)
-    }
-
-    static File selectPyenvFile(Set<File> files) {
-        return files.max({ a , b -> (a.name <=> b.name) })
     }
 
 }

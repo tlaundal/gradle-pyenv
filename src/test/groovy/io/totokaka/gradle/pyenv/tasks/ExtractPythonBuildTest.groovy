@@ -1,8 +1,8 @@
-package io.totokaka.gradle.pyenv
+package io.totokaka.gradle.pyenv.tasks
 
 import spock.lang.Specification
 
-class PyenvPluginTest extends Specification {
+class ExtractPythonBuildTest extends Specification {
     def "SelectPyenvFile selects newest pyenv"() {
         setup:
         File a = new File('pyenv-v1.0.3.zip')
@@ -10,7 +10,7 @@ class PyenvPluginTest extends Specification {
         File c = new File('pyenv-v1.1.4.zip')
 
         when:
-        File selected = PyenvPlugin.selectPyenvFile([a, b, c].toSet())
+        File selected = ExtractPythonBuild.selectPyenvFile([a, b, c].toSet())
 
         then:
         selected == b

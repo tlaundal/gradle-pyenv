@@ -67,14 +67,13 @@ class VenvExec extends DefaultTask {
     void configureAction(ExecSpec spec) {
         String venv = this.venvProp.get().getAbsolutePath()
 
-        spec.workingDir(workingDirectoryProp.get())
-
         // Simulate the venv activate script
-        spec.environment('PATH', "$venv/bin:${spec.environment.get('PATH')}")
-        spec.environment('VIRTUAL_ENV', venv)
         spec.environment.remove('PYTHONHOME')
+        spec.environment.put('PATH', "$venv/bin:${spec.environment.get('PATH')}")
+        spec.environment.put('VIRTUAL_ENV', venv)
         spec.setExecutable('bash')
 
+        spec.setWorkingDir(workingDirectoryProp.get())
         spec.setArgs(['-c', String.join(' ', [this.executableProp.get(), *this.arguments])])
     }
 
