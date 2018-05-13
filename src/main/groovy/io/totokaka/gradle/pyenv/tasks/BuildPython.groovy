@@ -2,18 +2,18 @@ package io.totokaka.gradle.pyenv.tasks
 
 import io.totokaka.gradle.pyenv.DirectoryChecksumUtil
 import io.totokaka.gradle.pyenv.Utils
+import org.gradle.api.DefaultTask
 import org.gradle.api.provider.Property
-import org.gradle.api.tasks.AbstractExecTask
 import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.OutputFile
-import org.gradle.api.tasks.PathSensitive
-import org.gradle.api.tasks.PathSensitivity
+import org.gradle.api.tasks.StopExecutionException
+import org.gradle.api.tasks.TaskAction
 
 @CacheableTask
-class BuildPython extends AbstractExecTask {
+class BuildPython extends DefaultTask {
 
     @Internal
     Property<File> pythonBuildDirProp
@@ -25,15 +25,9 @@ class BuildPython extends AbstractExecTask {
     Property<File> targetProp
 
     BuildPython() {
-        super(BuildPython)
         this.pythonBuildDirProp = project.objects.property(File)
         this.pythonProp = project.objects.property(String)
         this.targetProp = project.objects.property(File)
-
-        onlyIf({notBuilt()})
-        executable("${ -> pythonBuildDirProp.get().getAbsolutePath()}/bin/python-build")
-        args(["${ -> pythonProp.get()}", "${ -> targetProp.get().getAbsolutePath()}"])
-        doLast({writeChecksum()})
     }
 
     static {
@@ -42,7 +36,25 @@ class BuildPython extends AbstractExecTask {
         Utils.dslify(BuildPython, 'targetProp', 'target')
     }
 
-    boolean notBuilt() {
+    void buildPython() {
+        project.exec({ execAction ->
+            execAction.executable("${pythonBuildDirProp.get().getAbsolutePath()}/bin/python-build")
+            execAction.args([pythonProp.get(), targetProp.get().getAbsolutePath()])
+        })
+    }
+
+    @TaskAction
+    void exec() {
+        if (this.alreadyBuilt()) {
+            throw new StopExecutionException()
+        }
+
+        buildPython()
+
+        writeChecksum()
+    }
+
+    boolean alreadyBuilt() {
         byte[] checksum
         try {
             checksum = getChecksumFile().getBytes()
@@ -51,7 +63,7 @@ class BuildPython extends AbstractExecTask {
         }
 
         File target = targetProp.get()
-        return !target.isDirectory() || !DirectoryChecksumUtil.verifyDirectoryChecksum(target, checksum)
+        return target.isDirectory() && DirectoryChecksumUtil.verifyDirectoryChecksum(target, checksum)
     }
 
     void writeChecksum() {
