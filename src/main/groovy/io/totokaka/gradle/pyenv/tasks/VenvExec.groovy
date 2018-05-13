@@ -58,7 +58,7 @@ class VenvExec extends DefaultTask {
         spec.environment.remove('PYTHONHOME')
         spec.setExecutable('bash')
 
-        spec.setArgs(['-c', this.executableProp.get(), *this.arguments])
+        spec.setArgs(['-c', String.join(' ', [this.executableProp.get(), *this.arguments])])
     }
 
     @TaskAction
