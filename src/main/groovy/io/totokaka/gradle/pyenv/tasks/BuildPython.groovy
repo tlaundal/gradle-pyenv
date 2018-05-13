@@ -79,11 +79,11 @@ class BuildPython extends DefaultTask {
         }
 
         File target = targetProp.get()
-        return target.isDirectory() && DirectoryChecksumUtil.verifyDirectoryChecksum(target, checksum)
+        return target.isDirectory() && DirectoryChecksumUtil.verifyDirectoryChecksum(target, checksum, '__pycache__')
     }
 
     void writeChecksum() {
-        byte[] checksum = DirectoryChecksumUtil.checksumDirectory(targetProp.get())
+        byte[] checksum = DirectoryChecksumUtil.checksumDirectory(targetProp.get(), '__pycache__')
         getChecksumFile() << checksum
     }
 

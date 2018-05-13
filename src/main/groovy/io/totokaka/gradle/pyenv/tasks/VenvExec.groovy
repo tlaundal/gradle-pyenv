@@ -49,9 +49,9 @@ class VenvExec extends DefaultTask {
     ExecResult execResult
 
     VenvExec() {
-        super()
         venvProp = project.objects.property(File)
         executableProp = project.objects.property(Object)
+        arguments = []
         workingDirectoryProp = project.objects.property(File)
 
         venvProp.set(project.extensions.getByType(PyenvExtension).environmentProp)

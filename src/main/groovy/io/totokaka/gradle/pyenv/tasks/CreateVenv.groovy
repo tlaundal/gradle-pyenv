@@ -28,7 +28,6 @@ class CreateVenv extends DefaultTask {
     Property<File> targetProp
 
     CreateVenv() {
-        super(CreateVenv)
         prefixProp = project.objects.property(File)
         targetProp = project.objects.property(File)
     }
@@ -37,7 +36,7 @@ class CreateVenv extends DefaultTask {
         Utils.dslify(CreateVenv, 'prefixProp', 'prefix')
         Utils.dslify(CreateVenv, 'targetProp', 'target')
     }
-    
+
     @TaskAction
     void exec() {
         String prefix = prefixProp.get().getAbsolutePath()

@@ -22,7 +22,10 @@ class ExtractPythonBuild extends DefaultTask {
     @OutputDirectory
     Property<File> target
 
-    /**
+    ExtractPythonBuild() {
+        this.target = project.objects.property(File)
+    }
+/**
      * Exclude files that are irrelevant for python-build, and rewrite the paths, so python-build ends up in the root
      * directory
      * @param details The file to operate on
@@ -46,7 +49,7 @@ class ExtractPythonBuild extends DefaultTask {
         project.copy({ spec ->
             spec.from(pyenv)
             spec.eachFile(this.&excludeAndRewriteFiles as Action)
-            spec.into(task)
+            spec.into(target.get())
         } as Action)
     }
 

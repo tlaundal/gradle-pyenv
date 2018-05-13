@@ -14,6 +14,18 @@ class DirectoryChecksumUtilTest extends Specification {
         new File(testProjectDir.newFolder(), "child") << "A child"
     }
 
+    def "ignores __pycache__ files and directories"() {
+        setup:
+        byte[] before = DirectoryChecksumUtil.checksumDirectory(testProjectDir.root, '__pycache__')
+
+        when:
+        new File(testProjectDir.newFolder('__pycache__'), 'child') << "ignored"
+        testProjectDir.newFile('__pycache__.text') << "Also ignored"
+
+        then:
+        Arrays.equals(DirectoryChecksumUtil.checksumDirectory(testProjectDir.root, '__pycache__'), before)
+    }
+
     def "VerifyDirectoryChecksum"() {
         setup:
         def checksum = DirectoryChecksumUtil.checksumDirectory(testProjectDir.root)

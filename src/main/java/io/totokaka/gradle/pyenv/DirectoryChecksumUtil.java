@@ -9,22 +9,22 @@ import java.util.stream.Stream;
 
 public class DirectoryChecksumUtil {
 
-    public static boolean verifyDirectoryChecksum(File directory, byte[] checksum) {
+    public static boolean verifyDirectoryChecksum(File directory, byte[] checksum, String... ignore) {
         try {
-            byte[] actual = checksumDirectory(directory);
+            byte[] actual = checksumDirectory(directory, ignore);
             return Arrays.equals(checksum, actual);
         } catch (NoSuchAlgorithmException|IOException ignored) {
             return false;
         }
     }
 
-    public static byte[] checksumDirectory(File directory) throws NoSuchAlgorithmException, IOException {
+    public static byte[] checksumDirectory(File directory, String... ignore) throws NoSuchAlgorithmException, IOException {
         if (!directory.isDirectory()) {
             throw new UnsupportedOperationException(directory.toString() + " is not a directory");
         }
 
         List<InputStream> streams = new ArrayList<>();
-        collectInputStreams(streams, directory);
+        collectInputStreams(streams, directory, ignore);
 
         MessageDigest md = MessageDigest.getInstance("MD5");
         InputStream sequence = streams.stream().reduce(SequenceInputStream::new).orElse(null);
@@ -43,13 +43,25 @@ public class DirectoryChecksumUtil {
         return md.digest();
     }
 
-    private static void collectInputStreams(List<InputStream> streams, File directory) {
+    private static boolean passesFilters(File file, String... ignores) {
+        String path = file.getPath();
+        for (String ignore : ignores) {
+            if (path.contains(ignore)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static void collectInputStreams(List<InputStream> streams, File directory, String... ignore) {
         streamIfNotNull(directory.listFiles(File::isDirectory))
                 .sorted(Comparator.comparing(File::getAbsolutePath))
+                .filter(f -> passesFilters(f, ignore))
                 .forEachOrdered(d -> collectInputStreams(streams, d));
 
         streamIfNotNull(directory.listFiles(File::isFile))
                 .sorted(Comparator.comparing(File::getAbsolutePath))
+                .filter(f -> passesFilters(f, ignore))
                 .flatMap(SilencingStreamFlatMapper.of(FileInputStream::new))
                 .forEachOrdered(streams::add);
     }
