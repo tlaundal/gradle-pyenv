@@ -5,6 +5,7 @@ import io.totokaka.gradle.pyenv.tasks.CreateVenv
 import io.totokaka.gradle.pyenv.tasks.VenvExec
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.artifacts.DependencySet
 import org.gradle.api.file.FileCopyDetails
 import org.gradle.api.tasks.Copy
 
@@ -42,8 +43,10 @@ class PyenvPlugin implements Plugin<Project> {
                 artifact '/[organisation]/[module]/archive/[revision].[ext]'
             }
         }
+
+        def dependency = project.dependencies.create('pyenv:pyenv:v1.2.4@zip')
         project.configurations.create('pyenv')
-        project.dependencies.add('pyenv', 'pyenv:pyenv:v1.2.4@zip')
+                .defaultDependencies({ it.add(dependency) })
     }
 
     void createDefaultTasks() {
