@@ -51,7 +51,7 @@ class BuildPython extends AbstractExecTask {
         }
 
         File target = targetProp.get()
-        return !target.isDirectory() && !DirectoryChecksumUtil.verifyDirectoryChecksum(target, checksum)
+        return !target.isDirectory() || !DirectoryChecksumUtil.verifyDirectoryChecksum(target, checksum)
     }
 
     void writeChecksum() {
