@@ -22,6 +22,15 @@ dependencies {
 }
 
 sourceSets {
+    main {
+        groovy {
+            srcDirs = ['src/main/groovy', 'src/main/java' ]
+        }
+        java {
+            srcDirs = [] // don't compile Java code twice
+        }
+    }
+
     integrationTest {
         groovy.srcDir file('src/integTest/groovy')
         resources.srcDir file('src/integTest/resources')
@@ -69,7 +78,7 @@ task integrationTest(type: Test) {
     description = 'Runs the integration tests.'
     group = 'verification'
     testClassesDirs = sourceSets.integrationTest.output.classesDirs
-    classpath = sourceSets.functionalTest.runtimeClasspath
+    classpath = sourceSets.integrationTest.runtimeClasspath
     mustRunAfter test
 }
 check.dependsOn integrationTest

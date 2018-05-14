@@ -7,42 +7,58 @@ import spock.lang.Specification
 class DirectoryChecksumUtilTest extends Specification {
 
     @Rule
-    TemporaryFolder testProjectDir = new TemporaryFolder()
+    TemporaryFolder temporaryFolder = new TemporaryFolder()
 
     void setup() {
-        testProjectDir.newFile() << "A file"
-        new File(testProjectDir.newFolder(), "child") << "A child"
+        temporaryFolder.newFile() << "A file"
+        new File(temporaryFolder.newFolder(), "child") << "A child"
     }
 
     def "ignores __pycache__ files and directories"() {
-        setup:
-        byte[] before = DirectoryChecksumUtil.checksumDirectory(testProjectDir.root, '__pycache__')
+        given: "a checksum for a directory"
+        byte[] before = DirectoryChecksumUtil.checksumDirectory(temporaryFolder.root)
 
-        when:
-        new File(testProjectDir.newFolder('__pycache__'), 'child') << "ignored"
-        testProjectDir.newFile('__pycache__.text') << "Also ignored"
+        when: "files that should be ignored are added to the directory"
+        new File(temporaryFolder.newFolder('__pycache__'), 'child') << "ignored"
+        temporaryFolder.newFile('__pycache__.text') << "Also ignored"
 
-        then:
-        Arrays.equals(DirectoryChecksumUtil.checksumDirectory(testProjectDir.root, '__pycache__'), before)
+        then: "the checksum should still be verifed true"
+        DirectoryChecksumUtil.verifyDirectoryChecksum(temporaryFolder.root, before, '__pycache__')
     }
 
     def "VerifyDirectoryChecksum"() {
-        setup:
-        def checksum = DirectoryChecksumUtil.checksumDirectory(testProjectDir.root)
+        when: "a checksum is calculated for a directory"
+        def checksum = DirectoryChecksumUtil.checksumDirectory(temporaryFolder.root)
 
-        when:
-        def matches = DirectoryChecksumUtil.verifyDirectoryChecksum(testProjectDir.root, checksum)
-
-        then:
-        matches
+        then: "it should correctly verify"
+        DirectoryChecksumUtil.verifyDirectoryChecksum(temporaryFolder.root, checksum)
     }
 
     def "ChecksumDirectory"() {
-        when:
-        def bytes = DirectoryChecksumUtil.checksumDirectory(testProjectDir.root)
+        when: "a checksum is calculated for a directory"
+        def bytes = DirectoryChecksumUtil.checksumDirectory(temporaryFolder.root)
 
-        then:
+        then: "the checksum should not be null or have 0 length"
         bytes != null
         bytes.length > 0
+    }
+
+    def "ReadAndVerifyDirectoryChecksum and ChecksumDirectoryAndWrite"() {
+        when: "a checksum is written for a directory"
+        DirectoryChecksumUtil.checksumDirectoryAndWrite(temporaryFolder.root)
+
+        then: "it should verify correctly"
+        DirectoryChecksumUtil.readAndVerifyDirectoryChecksum(temporaryFolder.root)
+    }
+
+    def "ReadAndVerifyDirectoryChecksum and ChecksumDirectoryAndWrite inverted"() {
+        given: "a written directory checksum"
+        DirectoryChecksumUtil.checksumDirectoryAndWrite(temporaryFolder.root)
+
+        when: "a new file is added"
+        temporaryFolder.newFile() << 'something'
+
+        then: "the checksum no longer matches"
+        !DirectoryChecksumUtil.readAndVerifyDirectoryChecksum(temporaryFolder.root)
     }
 }
