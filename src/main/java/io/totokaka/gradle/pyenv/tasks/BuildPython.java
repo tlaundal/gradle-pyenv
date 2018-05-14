@@ -18,10 +18,10 @@ public class BuildPython extends DefaultTask {
     private final Property<String> python;
     private final Property<File> target;
 
-    public BuildPython(Project project) {
-        this.pythonBuildDir = project.getObjects().property(File.class);
-        this.python = project.getObjects().property(String.class);
-        this.target = project.getObjects().property(File.class);
+    public BuildPython() {
+        this.pythonBuildDir = getProject().getObjects().property(File.class);
+        this.python = getProject().getObjects().property(String.class);
+        this.target = getProject().getObjects().property(File.class);
     }
 
     @TaskAction

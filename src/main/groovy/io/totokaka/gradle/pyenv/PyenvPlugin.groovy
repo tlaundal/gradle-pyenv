@@ -55,8 +55,8 @@ class PyenvPlugin implements Plugin<Project> {
         task.setDescription('Create a virtual python environment with venv')
         task.dependsOn(project.tasks['buildPython'])
 
-        task.prefixProp.set(extension.prefixDirectoryProp)
-        task.targetProp.set(extension.environmentProp)
+        task.pythonHome.set(extension.prefixDirectoryProp)
+        task.target.set(extension.environmentProp)
     }
 
 }
