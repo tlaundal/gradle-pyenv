@@ -10,7 +10,7 @@ class ExtractPythonBuildTest extends Specification {
         File c = new File('pyenv-v1.1.4.zip')
 
         when:
-        File selected = ExtractPythonBuild.selectPyenvFile([a, b, c].toSet())
+        File selected = ExtractPythonBuild.selectMax([a, b, c].toSet())
 
         then:
         selected == b
