@@ -43,6 +43,29 @@ public class DirectoryChecksumUtil {
         return md.digest();
     }
 
+    public static boolean readAndVerifyDirectoryChecksum(File directory, String... ignores) {
+        return directory.isDirectory() &&
+                DirectoryChecksumUtil.verifyDirectoryChecksum(
+                        directory,
+                        readFileBytes(getChecksumFile(directory)),
+                        ignores);
+    }
+
+
+    public static void checksumDirectoryAndWrite(File directory, String... ignores) {
+        try (FileOutputStream outputStream =
+                     new FileOutputStream(getChecksumFile(directory))) {
+            byte[] checksum = DirectoryChecksumUtil.checksumDirectory(
+                    directory, ignores);
+            outputStream.write(checksum);
+        } catch (IOException | NoSuchAlgorithmException ignored) {}
+    }
+
+    private static File getChecksumFile(File directory) {
+        return new File(directory.getParent(),
+                directory.getName() + ".checksum");
+    }
+
     private static boolean passesFilters(File file, String... ignores) {
         String path = file.getPath();
         for (String ignore : ignores) {
@@ -51,6 +74,31 @@ public class DirectoryChecksumUtil {
             }
         }
         return true;
+    }
+
+    /**
+     * Simple util method to safely read a file into a byte array.
+     *
+     * @param file The file to read
+     * @return The bytes of the file, or an empty byte array if errors occurred
+     *         while reading the file
+     */
+    private static byte[] readFileBytes(File file) {
+        try (FileInputStream inputStream = new FileInputStream(file)) {
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+            byte[] buffer = new byte[1024];
+            for (int read = inputStream.read(buffer, 0, 1024);
+                 read >= 0;
+                 read = inputStream.read(buffer, 0, 1024)) {
+                outputStream.write(buffer, 0, read);
+            }
+
+            outputStream.flush();
+            return outputStream.toByteArray();
+        } catch (IOException ignored) {
+            return new byte[0];
+        }
     }
 
     private static void collectInputStreams(List<InputStream> streams, File directory, String... ignore) {
@@ -88,24 +136,6 @@ public class DirectoryChecksumUtil {
 
         static <T, R> SilencingStreamFlatMapper<T, R> of(SilencingStreamFlatMapper<T, R> func) {
             return func;
-        }
-    }
-
-    private static class IteratorEnumeration<T> implements Enumeration<T> {
-        Iterator<T> iterator;
-
-        IteratorEnumeration(Iterable<T> iterable) {
-            this.iterator = iterable.iterator();
-        }
-
-        @Override
-        public boolean hasMoreElements() {
-            return iterator.hasNext();
-        }
-
-        @Override
-        public T nextElement() {
-            return iterator.next();
         }
     }
 

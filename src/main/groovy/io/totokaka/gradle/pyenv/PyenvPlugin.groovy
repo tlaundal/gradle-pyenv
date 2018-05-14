@@ -45,9 +45,9 @@ class PyenvPlugin implements Plugin<Project> {
         task.setDescription('Builds python using python-build. Typically takes over 10 minutes')
         task.dependsOn(project.tasks['extractPythonBuild'])
 
-        task.pythonBuildDirProp.set(extension.pythonBuildDirectoryProp)
-        task.pythonProp.set(extension.pythonVersionProp)
-        task.targetProp.set(extension.prefixDirectoryProp)
+        task.pythonBuildDir.set(extension.pythonBuildDirectoryProp)
+        task.python.set(extension.pythonVersionProp)
+        task.target.set(extension.prefixDirectoryProp)
     }
 
     void configureDefaultCreateVenvTask(CreateVenv task) {
