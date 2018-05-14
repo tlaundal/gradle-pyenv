@@ -1,20 +1,11 @@
 package io.totokaka.gradle.pyenv
 
+import io.totokaka.gradle.pyenv.plugins.base.SimplePythonBasePlugin
 import io.totokaka.gradle.pyenv.tasks.BuildPython
 import io.totokaka.gradle.pyenv.tasks.CreateVenv
 import io.totokaka.gradle.pyenv.tasks.ExtractPythonBuild
-import io.totokaka.gradle.pyenv.tasks.VenvExec
-import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.artifacts.DependencySet
-import org.gradle.api.artifacts.repositories.IvyArtifactRepository
-import org.gradle.api.artifacts.repositories.RepositoryLayout
-import org.gradle.api.file.FileCopyDetails
-import org.gradle.api.internal.artifacts.repositories.layout.IvyRepositoryLayout
-import org.gradle.api.tasks.Copy
-
-import java.util.regex.Pattern
 
 /**
  * A gradle plugin that wraps pyenv, for easy use of python in gradle projects
@@ -31,46 +22,15 @@ class PyenvPlugin implements Plugin<Project> {
         this.project = project
         this.extension = PyenvExtension.create(project)
 
-        configurePyenvDependency()
+        project.getPlugins().apply(SimplePythonBasePlugin)
+
         createDefaultTasks()
-        extendWithTaskTypes()
-    }
-
-    /**
-     * Configures pyenv as an ivy dependency.
-     *
-     * Creates a dependency configuration named pyenv,
-     * adds a repository for github releases and
-     * adds pyenv as a default dependency in the pyenv configuration.
-     */
-    void configurePyenvDependency() {
-        project.repositories.ivy({ repo ->
-            repo.setUrl('https://github.com/')
-            repo.layout('pattern', { layout ->
-                layout.artifact('/[organisation]/[module]/archive/[revision].[ext]')
-            } as Action)
-        } as Action)
-
-        def configuration = project.configurations.create('pyenv')
-
-        def dependency = project.dependencies.create('pyenv:pyenv:v1.2.4@zip')
-        configuration.defaultDependencies({ it.add(dependency) })
     }
 
     void createDefaultTasks() {
         project.tasks.create('extractPythonBuild', ExtractPythonBuild, this.&configureExtractPythonBuildTask)
         project.tasks.create('buildPython', BuildPython, this.&configureDefaultBuildPythonTask)
         project.tasks.create('createVenv', CreateVenv, this.&configureDefaultCreateVenvTask)
-    }
-
-    void extendWithTaskTypes() {
-        extendWithTaskType(BuildPython)
-        extendWithTaskType(CreateVenv)
-        extendWithTaskType(VenvExec)
-    }
-
-    void extendWithTaskType(Class type) {
-        project.extensions.extraProperties.set(type.simpleName, type)
     }
 
     void configureExtractPythonBuildTask(ExtractPythonBuild task) {

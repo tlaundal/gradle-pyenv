@@ -42,6 +42,10 @@ gradlePlugin {
             id = 'io.totokaka.gradle.pyenv'
             implementationClass = 'io.totokaka.gradle.pyenv.PyenvPlugin'
         }
+        simplePythonBase {
+            id = 'io.totokaka.simple-python-base'
+            implementationClass = 'io.totokaka.gradle.pyenv.plugins.base.SimplePythonBasePlugin'
+        }
     }
 
     testSourceSets sourceSets.functionalTest
