@@ -4,37 +4,35 @@ import io.totokaka.gradle.pyenv.SupplierProvider;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
-import org.gradle.api.tasks.InputDirectory;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.process.ExecResult;
 import org.gradle.process.ExecSpec;
 
-import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class VenvExec extends DefaultTask {
 
-    private final Property<File> virtualEnvironment;
+    private final Property<Object> virtualEnvironment;
     private final Property<Object> executable;
-    private final Property<File> workingDirectory;
+    private final Property<Object> workingDirectory;
     private final ArrayList<Object> arguments;
 
     private ExecResult result;
 
     public VenvExec() {
-        this.virtualEnvironment = getProject().getObjects().property(File.class);
+        this.virtualEnvironment = getProject().getObjects().property(Object.class);
         this.executable = getProject().getObjects().property(Object.class);
-        this.workingDirectory = getProject().getObjects().property(File.class);
+        this.workingDirectory = getProject().getObjects().property(Object.class);
         this.arguments = new ArrayList<>();
 
         this.workingDirectory.set(SupplierProvider.of(getProject()::getProjectDir));
     }
 
     private void configureAction(ExecSpec spec) {
-        String env = this.virtualEnvironment.get().getAbsolutePath();
+        String env = getProject().file(this.virtualEnvironment.get()).getAbsolutePath();
 
         // Simulate the venv activate script
         Map<String, Object> environment = spec.getEnvironment();
@@ -62,7 +60,7 @@ public class VenvExec extends DefaultTask {
      * @return The {@link Property} for the virtual environment
      */
     @Input
-    public Property<File> getVirtualEnvironment() {
+    public Property<Object> getVirtualEnvironment() {
         return this.virtualEnvironment;
     }
 
@@ -84,7 +82,7 @@ public class VenvExec extends DefaultTask {
      * @return The {@link Property} for the working directory.
      */
     @Input
-    public Property<File> getWorkingDirectory() {
+    public Property<Object> getWorkingDirectory() {
         return this.workingDirectory;
     }
 

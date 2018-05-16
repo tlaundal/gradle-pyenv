@@ -38,9 +38,9 @@ sourceSets {
 
 gradlePlugin {
     plugins {
-        gradlePyenv {
-            id = 'io.totokaka.gradle.pyenv'
-            implementationClass = 'io.totokaka.gradle.pyenv.PyenvPlugin'
+        simplePython {
+            id = 'io.totokaka.simple-python'
+            implementationClass = 'io.totokaka.gradle.pyenv.plugins.simplePython.SimplePythonPlugin'
         }
         simplePythonBase {
             id = 'io.totokaka.simple-python-base'
@@ -56,10 +56,16 @@ pluginBundle {
     vcsUrl = 'https://github.com/totokaka/gradle-pyenv.git'
 
     plugins {
-        gradlePyenv {
-            id = 'io.totokaka.gradle.pyenv'
-            displayName = 'gradle-pyenv'
+        simplePython {
+            id = 'io.totokaka.simple-python'
+            displayName = 'simple-python'
             description = 'Simple gradle plugin for building python projects'
+            tags = ['python']
+        }
+        simplePythonBase {
+            id = 'io.totokaka.simple-python-base'
+            displayName = 'simple-python-base'
+            description = 'The base plugin for simple-python (conventions)'
             tags = ['python']
         }
     }

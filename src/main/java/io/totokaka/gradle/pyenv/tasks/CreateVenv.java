@@ -6,7 +6,6 @@ import org.gradle.api.tasks.InputDirectory;
 import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.TaskAction;
 
-import java.io.File;
 import java.util.Arrays;
 
 /**
@@ -17,21 +16,21 @@ import java.util.Arrays;
  */
 public class CreateVenv extends DefaultTask {
 
-    private final Property<File> pythonHome;
-    private final Property<File> target;
+    private final Property<Object> pythonHome;
+    private final Property<Object> target;
 
     public CreateVenv() {
-        this.pythonHome = getProject().getObjects().property(File.class);
-        this.target = getProject().getObjects().property(File.class);
+        this.pythonHome = getProject().getObjects().property(Object.class);
+        this.target = getProject().getObjects().property(Object.class);
     }
 
     @TaskAction
     void createVenv() {
-        String pythonHome = this.pythonHome.get().getAbsolutePath();
-        String target = this.pythonHome.get().getAbsolutePath();
+        String pythonHome = getProject().file(this.pythonHome.get()).getAbsolutePath();
+        String target = getProject().file(this.pythonHome.get()).getAbsolutePath();
         getProject().exec(spec -> {
             spec.getEnvironment().put("PYTHONHOME", pythonHome);
-            spec.setExecutable("$prefix/bin/python");
+            spec.setExecutable(pythonHome + "/bin/python");
             spec.setArgs(Arrays.asList("-m", "venv", target));
         });
     }
@@ -44,7 +43,7 @@ public class CreateVenv extends DefaultTask {
      * @return The {@link Property} for the python home
      */
     @InputDirectory
-    public Property<File> getPythonHome() {
+    public Property<Object> getPythonHome() {
         return this.pythonHome;
     }
 
@@ -54,7 +53,7 @@ public class CreateVenv extends DefaultTask {
      * @return The {@link Property} for the virtual environment target.
      */
     @OutputDirectory
-    public Property<File> getTarget() {
+    public Property<Object> getTarget() {
         return this.target;
     }
 

@@ -2,7 +2,6 @@ package io.totokaka.gradle.pyenv.tasks;
 
 import io.totokaka.gradle.pyenv.DirectoryChecksumUtil;
 import org.gradle.api.DefaultTask;
-import org.gradle.api.Project;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.*;
 
@@ -14,19 +13,19 @@ public class BuildPython extends DefaultTask {
 
     private static final String[] IGNORES = new String[] {"__pycache__"};
 
-    private final Property<File> pythonBuildDir;
-    private final Property<String> python;
-    private final Property<File> target;
+    private final Property<Object> pythonBuildDir;
+    private final Property<Object> python;
+    private final Property<Object> target;
 
     public BuildPython() {
-        this.pythonBuildDir = getProject().getObjects().property(File.class);
-        this.python = getProject().getObjects().property(String.class);
-        this.target = getProject().getObjects().property(File.class);
+        this.pythonBuildDir = getProject().getObjects().property(Object.class);
+        this.python = getProject().getObjects().property(Object.class);
+        this.target = getProject().getObjects().property(Object.class);
     }
 
     @TaskAction
     void runTask() {
-        File target = this.target.get();
+        File target = getProject().file(this.target.get());
         if (DirectoryChecksumUtil.readAndVerifyDirectoryChecksum(
                 target, IGNORES)) {
             throw new StopExecutionException(
@@ -39,11 +38,11 @@ public class BuildPython extends DefaultTask {
     }
 
     private void buildPython() {
+        String buildDir = getProject().file(pythonBuildDir.get()).getAbsolutePath();
+        String target = getProject().file(this.target.get()).getAbsolutePath();
         this.getProject().exec(spec -> {
-           spec.setExecutable(pythonBuildDir.get().getAbsolutePath() +
-                   "/bin/python-build");
-           spec.setArgs(Arrays.asList(python.get(),
-                   target.get().getAbsolutePath()));
+           spec.setExecutable(buildDir + "/bin/python-build");
+           spec.setArgs(Arrays.asList(python.get(), target));
         });
     }
 
@@ -53,11 +52,11 @@ public class BuildPython extends DefaultTask {
      * This is marked as @{@link Internal} because the directory is not
      * directly linked to the python build it produces.
      *
-     * @return The {@link Property} for the {@link File} python-build should
+     * @return The {@link Property} for the file python-build should
      *         be found in
      */
     @Internal
-    public Property<File> getPythonBuildDir() {
+    public Property<Object> getPythonBuildDir() {
         return pythonBuildDir;
     }
 
@@ -69,7 +68,7 @@ public class BuildPython extends DefaultTask {
      * @return The {@link Property} for the python version
      */
     @Input
-    public Property<String> getPython() {
+    public Property<Object> getPython() {
         return python;
     }
 
@@ -81,7 +80,7 @@ public class BuildPython extends DefaultTask {
      * @return The {@link Property} for the target directory for the build
      */
     @OutputDirectory
-    public Property<File> getTarget() {
+    public Property<Object> getTarget() {
         return target;
     }
 }

@@ -17,10 +17,10 @@ import java.util.regex.Pattern;
 @CacheableTask
 public class ExtractPythonBuild extends DefaultTask {
 
-    private final Property<File> target;
+    private final Property<Object> target;
 
     public ExtractPythonBuild() {
-        this.target = getProject().getObjects().property(File.class);
+        this.target = getProject().getObjects().property(Object.class);
     }
 
     @TaskAction
@@ -35,7 +35,7 @@ public class ExtractPythonBuild extends DefaultTask {
     }
 
     @OutputDirectory
-    public Property<File> getTarget() {
+    public Property<Object> getTarget() {
         return target;
     }
 
