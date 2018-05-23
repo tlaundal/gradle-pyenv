@@ -1,12 +1,24 @@
 package io.totokaka.gradle.pyenv;
 
 import org.gradle.api.Transformer;
+import org.gradle.api.internal.provider.DefaultProvider;
+import org.gradle.api.internal.provider.ProviderInternal;
 import org.gradle.api.provider.Provider;
 
 import javax.annotation.Nullable;
 import java.util.function.Supplier;
 
-public interface SupplierProvider<T> extends Provider<T>, Supplier<T> {
+public interface SupplierProvider<T> extends ProviderInternal<T>, Provider<T>, Supplier<T> {
+
+    /**
+     * @see DefaultProvider#getType()
+     * @see ProviderInternal#getType()
+     */
+    @Nullable
+    @Override
+    default Class<T> getType() {
+        return null;
+    }
 
     @Nullable
     @Override
@@ -24,7 +36,7 @@ public interface SupplierProvider<T> extends Provider<T>, Supplier<T> {
     }
 
     @Override
-    default <S> Provider<S> map(Transformer<? extends S, ? super T> transformer) {
+    default <S> SupplierProvider<S> map(Transformer<? extends S, ? super T> transformer) {
         return of(() -> transformer.transform(this.get()));
     }
 
@@ -33,7 +45,7 @@ public interface SupplierProvider<T> extends Provider<T>, Supplier<T> {
         return true;
     }
 
-    static <T> SupplierProvider<T> of (SupplierProvider<T> provider) {
-        return provider;
+    static <T> SupplierProvider<T> of (Supplier<T> supplier) {
+        return supplier::get;
     }
 }
