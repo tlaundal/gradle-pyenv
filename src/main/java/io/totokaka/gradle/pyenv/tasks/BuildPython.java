@@ -31,6 +31,7 @@ public class BuildPython extends DefaultTask {
         try {
             return ChecksumBuilder.md5()
                     .ignore(IGNORE)
+                    .digest(python.get().toString())
                     .digest(dir)
                     .checksum();
         } catch (IOException | NoSuchAlgorithmException e) {
