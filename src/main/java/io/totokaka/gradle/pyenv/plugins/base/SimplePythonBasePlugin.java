@@ -16,7 +16,7 @@ import org.gradle.api.artifacts.Dependency;
 public class SimplePythonBasePlugin implements Plugin<Project> {
 
     private final static String GITHUB_URL = "https://github.com/";
-    private final static String GITHUB_PATTERN = "/[organisation]/[module]/archive/[revision].[ext]";
+    private final static String GITHUB_PATTERN = "[organisation]/[module]/archive/[revision].[ext]";
     private final static String PYENV_DEPENDENCY = "pyenv:pyenv:v1.2.4@zip";
 
     private Project project;
@@ -38,8 +38,9 @@ public class SimplePythonBasePlugin implements Plugin<Project> {
      */
     private void configurePyenvDependency() {
         project.getRepositories().ivy(repo -> {
+            repo.setName("github-releases");
             repo.setUrl(GITHUB_URL);
-            repo.artifactPattern(GITHUB_PATTERN);
+            repo.artifactPattern(GITHUB_URL + GITHUB_PATTERN);
         });
 
         Configuration configuration = project.getConfigurations().create("pyenv")
